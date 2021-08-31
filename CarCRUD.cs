@@ -12,11 +12,11 @@ namespace ProjectAgency
         public static string fileName = "car.json";
         Car car = new Car();
         public static string path = @"C:\Users\csampedro\source\repos\Proyecto-Agencia_de_Alquiler_de_Autos\bin\Debug\car.json";
+        string jsonString = File.ReadAllText(fileName);
 
 
         public void GetCar(string Id)
         {
-            string jsonString = File.ReadAllText(fileName);
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
             for (var i = 0; i < allCars.Count; i++)
             {
@@ -34,8 +34,7 @@ namespace ProjectAgency
 
         public void CreateCar()
         {
-            string jsonString2 = File.ReadAllText(fileName);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString2);
+            allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
             Console.WriteLine("Enter the patent:");
             car.Patent = Console.ReadLine();
             Console.WriteLine("Enter the brand:");
@@ -56,11 +55,8 @@ namespace ProjectAgency
 
         public void Delete(string patent)
         {
-            string jsonString2 = File.ReadAllText(fileName);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString2);
-            string json = JsonConvert.SerializeObject(allCars);
-            string jsonString3 = File.ReadAllText(fileName);
-            allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString3);
+
+            allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
 
             foreach (Car element in allCars)
             {
@@ -68,7 +64,7 @@ namespace ProjectAgency
                 {
                     Console.WriteLine($"Patent: {patent} deleted !!");
                     allCars.Remove(element);
-                    json = JsonConvert.SerializeObject(allCars);
+                    string json = JsonConvert.SerializeObject(allCars);
                     System.IO.File.WriteAllText(path, json);
                     break;
                 }
@@ -77,7 +73,6 @@ namespace ProjectAgency
 
         public void Update(string Id)
         {
-            string jsonString = File.ReadAllText(fileName);
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
             for (var i = 0; i < allCars.Count; i++)
             {
@@ -95,8 +90,6 @@ namespace ProjectAgency
                     allCars[i].Color = Console.ReadLine();
                     Console.WriteLine("UPDATE - Is the car automatic?(true/false):");
                     allCars[i].Automatic = Convert.ToBoolean(Console.ReadLine());
-                    
-                    //allCars.Add(car);//cual seria el metodo para actualizar?
                     Console.WriteLine("Car was Updated succesfully !!");
                     string json = JsonConvert.SerializeObject(allCars);
                     System.IO.File.WriteAllText(path, json);
