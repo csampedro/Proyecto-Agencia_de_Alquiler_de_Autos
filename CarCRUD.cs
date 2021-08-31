@@ -56,8 +56,6 @@ namespace ProjectAgency
 
         public void Delete(string patent)
         {
-            string jsonString2 = File.ReadAllText(fileName);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString2);
             string json = JsonConvert.SerializeObject(allCars);
             string jsonString3 = File.ReadAllText(fileName);
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString3);
@@ -95,8 +93,6 @@ namespace ProjectAgency
                     allCars[i].Color = Console.ReadLine();
                     Console.WriteLine("UPDATE - Is the car automatic?(true/false):");
                     allCars[i].Automatic = Convert.ToBoolean(Console.ReadLine());
-                    
-                    //allCars.Add(car);//cual seria el metodo para actualizar?
                     Console.WriteLine("Car was Updated succesfully !!");
                     string json = JsonConvert.SerializeObject(allCars);
                     System.IO.File.WriteAllText(path, json);
