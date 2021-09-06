@@ -1,7 +1,9 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
+using System.Text;
 
 
 namespace ProjectAgency
@@ -9,30 +11,36 @@ namespace ProjectAgency
     public class CarCRUD
     {
         List<Car> allCars = new List<Car>();
-        public static string fileName = "car.json";
+        private string jsonFile = ConfigurationManager.AppSettings[("path")];
+        string jsonString = File.ReadAllText("car.json");
         Car car = new Car();
-        public static string path = @"C:\Users\csampedro\source\repos\Proyecto-Agencia_de_Alquiler_de_Autos\bin\Debug\car.json";
-        string jsonString = File.ReadAllText(fileName);
 
 
-        public void GetCar(string Id)
+        public Car Get(string Id)
         {
+                    
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
-            for (var i = 0; i < allCars.Count; i++)
+            
+            foreach (Car car in allCars)
             {
-                if (Convert.ToString(Id) == (allCars[i].Patent))
+                if (Convert.ToString(Id).Equals(car.Patent))
                 {
-                    Console.WriteLine($"Patente: {allCars[i].Patent}");
-                    Console.WriteLine($"Patente: {allCars[i].Brand}");
-                    Console.WriteLine($"Patente: {allCars[i].Model}");
-                    Console.WriteLine($"Patente: {allCars[i].DoorsAmount}");
-                    Console.WriteLine($"Patente: {allCars[i].Color}");
-                    Console.WriteLine($"Patente: {allCars[i].Automatic}");
+                    Console.WriteLine($"Patent: {car.Patent}");
+                    Console.WriteLine($"Brand: {car.Brand}");
+                    Console.WriteLine($"Model: {car.Model}");
+                    Console.WriteLine($"DoorsAmount: {car.DoorsAmount}");
+                    Console.WriteLine($"Color: {car.Color}");
+                    Console.WriteLine($"Automatic: {car.Automatic}");
+                    return car;
                 }
             }
+
+            return car;
+
         }
 
-        public void CreateCar()
+
+        public Car Create(Car car)
         {
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
             Console.WriteLine("Enter the patent:");
@@ -50,7 +58,8 @@ namespace ProjectAgency
             allCars.Add(car);
             Console.WriteLine("Car was added succesfully !!");
             string json = JsonConvert.SerializeObject(allCars);
-            System.IO.File.WriteAllText(path, json);
+            File.WriteAllText(jsonFile,json);
+            return car;
         }
 
         public void Delete(string patent)
@@ -65,7 +74,7 @@ namespace ProjectAgency
                     Console.WriteLine($"Patent: {patent} deleted !!");
                     allCars.Remove(element);
                     string json = JsonConvert.SerializeObject(allCars);
-                    System.IO.File.WriteAllText(path, json);
+                    File.WriteAllText(jsonFile, json);
                     break;
                 }
             }
@@ -92,13 +101,10 @@ namespace ProjectAgency
                     allCars[i].Automatic = Convert.ToBoolean(Console.ReadLine());
                     Console.WriteLine("Car was Updated succesfully !!");
                     string json = JsonConvert.SerializeObject(allCars);
-                    System.IO.File.WriteAllText(path, json);
+                    File.WriteAllText(jsonFile, json);
 
                 }
             }
-
         }
-
-
     }
 }

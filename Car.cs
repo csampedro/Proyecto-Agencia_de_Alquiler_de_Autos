@@ -10,6 +10,5 @@ namespace ProjectAgency
         public byte DoorsAmount { get; set; }
         public string Color { get; set; }
         public bool Automatic { get; set; }
-               
     }
 }
