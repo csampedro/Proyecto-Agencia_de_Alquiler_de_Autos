@@ -1,24 +1,23 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
+
 
 
 namespace ProjectAgency
 {
     public class Program
     {
-        public static string path = @"C:\Users\csampedro\source\repos\Proyecto-Agencia_de_Alquiler_de_Autos\bin\Debug\car.json";
-        public static string fileName = "car.json";
         public CarCRUD carCrud;
+        public Car car;
 
         static void Main(string[] args)
         {                        
             bool leave = false;
-            
+
 
             while (!leave)
             {
+                Car car = new Car();
+                CarCRUD carCrud = new CarCRUD();
                 Console.WriteLine("1. Get car information option");
                 Console.WriteLine("2. Add car option");
                 Console.WriteLine("3. Delete car option");
@@ -26,7 +25,6 @@ namespace ProjectAgency
                 Console.WriteLine("5. Leave");
                 Console.WriteLine("Select an option");
                 int option = Convert.ToInt32(Console.ReadLine());
-                CarCRUD carCrud = new CarCRUD();
 
                 switch (option)
                 {
@@ -34,12 +32,12 @@ namespace ProjectAgency
                         Console.WriteLine("You have chosen Get car information option");
                         Console.WriteLine("Enter the car patent");
                         var Id = Console.ReadLine();
-                        carCrud.GetCar(Id);
+                        carCrud.Get(Id);
                         break;
 
                     case 2:
                         Console.WriteLine("You have chosen Add car option");
-                        carCrud.CreateCar();
+                        carCrud.Create(car);
                         break;
 
                     case 3:   // pasarlo aNetcore 5.0
