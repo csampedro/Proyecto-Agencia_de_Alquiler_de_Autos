@@ -22,7 +22,9 @@ namespace ProjectAgency
                 Console.WriteLine("2. Add car option");
                 Console.WriteLine("3. Delete car option");
                 Console.WriteLine("4. Update car option");
-                Console.WriteLine("5. Leave");
+                Console.WriteLine("5. List All Cars");
+                Console.WriteLine("6. Leave");
+
                 Console.WriteLine("Select an option");
                 int option = Convert.ToInt32(Console.ReadLine());
 
@@ -55,6 +57,11 @@ namespace ProjectAgency
                         break;
 
                     case 5:
+                        Console.WriteLine("You have chosen List All Cars option");
+                        carCrud.ListAll();
+                        break;
+
+                    case 6:
                         Console.WriteLine("You have chosen Leave option");
                         leave = true;
                         break;
