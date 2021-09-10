@@ -1,5 +1,4 @@
-﻿
-using ProjectAgency;
+﻿using ProjectAgency;
 
 namespace ProyectoAgencia.Interfaces
 {
@@ -7,7 +6,7 @@ namespace ProyectoAgencia.Interfaces
     {
         public Car Get(string Id);
         public Car Create(Car car);
-        public void Delete(string patent);
+        public void Delete(string Id);
         public void Update(string Id);
         public Car ListAll();
     }

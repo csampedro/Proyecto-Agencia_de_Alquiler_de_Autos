@@ -5,15 +5,13 @@ using System.Configuration;
 using System.IO;
 using ProyectoAgencia.Interfaces;
 
-
-
 namespace ProjectAgency
 {
     public class CarCRUD : ICarCRUD
     {
         List<Car> allCars = new List<Car>();
         private string jsonFile = ConfigurationManager.AppSettings[("path")];
-        string jsonString = File.ReadAllText("car.json");
+        string jsonString = File.ReadAllText("car.json");//I didn't use an "using" block because File.ReadAllText close the file at the end.
         Car car = new Car();
 
 
@@ -25,6 +23,7 @@ namespace ProjectAgency
             {
                 if (Convert.ToString(Id).Equals(car.Patent))
                 {
+                    Console.WriteLine($"Patent: {car.Id}");
                     Console.WriteLine($"Patent: {car.Patent}");
                     Console.WriteLine($"Brand: {car.Brand}");
                     Console.WriteLine($"Model: {car.Model}");
@@ -41,6 +40,8 @@ namespace ProjectAgency
         public Car Create(Car car)
         {
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
+            Console.WriteLine("Enter the Id:");
+            car.Id = Console.ReadLine();
             Console.WriteLine("Enter the patent:");
             car.Patent = Console.ReadLine();
             Console.WriteLine("Enter the brand:");
@@ -60,16 +61,16 @@ namespace ProjectAgency
             return car;
         }
 
-        public void Delete(string patent)
+        public void Delete(string Id)
         {
 
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
 
             foreach (Car element in allCars)
             {
-                if (patent.Equals(element.Patent))
+                if (Id.Equals(element.Patent))
                 {
-                    Console.WriteLine($"Patent: {patent} deleted !!");
+                    Console.WriteLine($"Idt: {Id} deleted !!");
                     allCars.Remove(element);
                     string json = JsonConvert.SerializeObject(allCars);
                     File.WriteAllText(jsonFile, json);
@@ -85,6 +86,8 @@ namespace ProjectAgency
             {
                 if (Convert.ToString(Id) == (allCars[i].Patent))
                 {
+                    Console.WriteLine("Enter the NEW id:");
+                    allCars[i].Id = Console.ReadLine();
                     Console.WriteLine("Enter the NEW patent:");
                     allCars[i].Patent = Console.ReadLine();
                     Console.WriteLine("Enter the NEW brand:");
@@ -104,12 +107,13 @@ namespace ProjectAgency
                 }
             }
         }
-        public Car ListAll ()
+        public Car ListAll()
         {
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
 
             foreach (Car car in allCars)
-            {            
+            {
+                    Console.WriteLine($"Id: {car.Id}");
                     Console.WriteLine($"Patent: {car.Patent}");
                     Console.WriteLine($"Brand: {car.Brand}");
                     Console.WriteLine($"Model: {car.Model}");
