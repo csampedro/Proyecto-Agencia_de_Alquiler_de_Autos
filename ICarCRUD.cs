@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using ProyectoAgencia.Interfaces;
-
+using System.Text;
 
 
 namespace ProjectAgency
 {
-    public class CarCRUD : ICarCRUD
+    public class CarCRUD
     {
         List<Car> allCars = new List<Car>();
         private string jsonFile = ConfigurationManager.AppSettings[("path")];
@@ -18,7 +17,8 @@ namespace ProjectAgency
 
 
         public Car Get(string Id)
-        {                    
+        {
+                    
             allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
             
             foreach (Car car in allCars)
@@ -34,7 +34,9 @@ namespace ProjectAgency
                     return car;
                 }
             }
+
             return car;
+
         }
 
 
@@ -103,21 +105,6 @@ namespace ProjectAgency
 
                 }
             }
-        }
-        public Car ListAll ()
-        {
-            allCars = JsonConvert.DeserializeObject<List<Car>>(jsonString);
-
-            foreach (Car car in allCars)
-            {            
-                    Console.WriteLine($"Patent: {car.Patent}");
-                    Console.WriteLine($"Brand: {car.Brand}");
-                    Console.WriteLine($"Model: {car.Model}");
-                    Console.WriteLine($"DoorsAmount: {car.DoorsAmount}");
-                    Console.WriteLine($"Color: {car.Color}");
-                    Console.WriteLine($"Automatic: {car.Automatic}");                 
-            }
-            return car;
         }
     }
 }
