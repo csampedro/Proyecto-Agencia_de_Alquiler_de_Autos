@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +12,6 @@ namespace ProyectoAgencia
         public int RentalDuration { get; set; }
         public int RentalClientId { get; set; }
         public int RentalCarId { get; set; }
-        public string RentalReturnDate { get; set; }
+        public DateTime RentalReturnDate { get; set; }
     }
 }

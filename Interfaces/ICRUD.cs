@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 
 namespace ProyectoAgencia.Interfaces
 {
@@ -6,7 +6,7 @@ namespace ProyectoAgencia.Interfaces
     {
         public T Get(int Id);
         public T Create(T t);
-        public void Delete(string Id);
+        public void Delete(int Id);
         public void Update(T t);
         public List<T> ListAll();
     }

@@ -3,8 +3,9 @@ using ProyectoAgencia.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-namespace ProjectAgency
+namespace ProyectoAgencia
 {
     public class CarCRUD : ICRUD<Car>
     {
@@ -16,74 +17,52 @@ namespace ProjectAgency
 
         public Car Get(int Id)
         {
-         var carJsonString = File.ReadAllText(_carFilePath);
-         var allCars = JsonConvert.DeserializeObject<List<Car>>(carJsonString);
-
-            foreach (Car car in allCars)
-            {
-                if (Convert.ToString(Id).Equals(car.Id))
-                {
-                    return car;
-                }
-            }
-            return null;
+            return ListAll().FirstOrDefault(car => car.Id == Id);
         }
 
         public Car Create(Car car)
         {
-            var carJsonString = File.ReadAllText(_carFilePath);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(carJsonString);
-
+            var allCars = ListAll();
             allCars.Add(car);            
-            string json = JsonConvert.SerializeObject(allCars);
-            File.WriteAllText(_carFilePath, json);
+            SaveAll(allCars);
             return car;
         }
 
-        public void Delete(string Id)
+        public void Delete(int Id)
         {
-            var carJsonString = File.ReadAllText(_carFilePath);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(carJsonString);
-
-            foreach (Car element in allCars)
+            var allCars = ListAll();
+            var carToRemove = allCars.FirstOrDefault(c => c.Id == Id);
+            
+            if (carToRemove != null)
             {
-                if (Id.Equals(element.Id))
-                {
-                    allCars.Remove(element);
-                    string json = JsonConvert.SerializeObject(allCars);
-                    File.WriteAllText(_carFilePath, json);
-                    break;
-                }
+                allCars.Remove(carToRemove);
+                SaveAll(allCars);
             }
         }
 
         public void Update(Car car)
         {
-            var carJsonString = File.ReadAllText(_carFilePath);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(carJsonString);
+            var allCars = ListAll();
+            var index = allCars.FindIndex(c => c.Id == car.Id);
 
-            for (var i = 0; i < allCars.Count; i++)
+            if (index != -1)
             {
-                if (car.Id == (allCars[i].Patent))
-                {
-                    allCars[i].Patent = car.Patent;
-                    allCars[i].Brand = car.Brand;
-                    allCars[i].Model = car.Model;
-                    allCars[i].DoorsAmount = car.DoorsAmount;
-                    allCars[i].Color = car.Color;
-                    allCars[i].Automatic = car.Automatic;
-                    string json = JsonConvert.SerializeObject(allCars);
-                    File.WriteAllText(_carFilePath, json);
-                }
+                allCars[index] = car;
+                SaveAll(allCars);
             }
         }
 
         public List<Car> ListAll()
         {
+            if (!File.Exists(_carFilePath)) return new List<Car>();
             var carJsonString = File.ReadAllText(_carFilePath);
-            var allCars = JsonConvert.DeserializeObject<List<Car>>(carJsonString);
+            return JsonConvert.DeserializeObject<List<Car>>(carJsonString) ?? new List<Car>();
+        }
 
-            return allCars;
+        private void SaveAll(List<Car> allCars)
+        {
+            string json = JsonConvert.SerializeObject(allCars, Formatting.Indented);
+            File.WriteAllText(_carFilePath, json);
         }
     }
 }

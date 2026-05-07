@@ -1,4 +1,5 @@
-﻿
+﻿﻿
+using System;
 
 namespace ProyectoAgencia
 {
@@ -12,6 +13,6 @@ namespace ProyectoAgencia
         public string Address { get; set; }
         public string City { get; set; }
         public int Cp { get; set; }
-        public string LastUpdatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
     }
 }

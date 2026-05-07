@@ -1,8 +1,8 @@
-﻿using ProyectoAgencia;
+﻿﻿﻿﻿using ProyectoAgencia;
 using System;
 using System.Configuration;
 
-namespace ProjectAgency
+namespace ProyectoAgencia
 {
     public class Program
     {
@@ -49,15 +49,27 @@ namespace ProjectAgency
                 Console.WriteLine("16. Leave");
                 Console.WriteLine("");
                 Console.WriteLine("Select an option");
-                int option = Convert.ToInt32(Console.ReadLine());
+                
+                string input = Console.ReadLine();
+                if (!int.TryParse(input, out int option)) 
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                    continue;
+                }
 
                 switch (option)
                 {
                     case 1:
                         Console.WriteLine("You have chosen Get car information option");
                         Console.WriteLine("Enter the car Id");
-                        car = carCrud.Get(Convert.ToInt32(Console.ReadLine()));
-                        Console.WriteLine($"Patent: {car.Id}");
+                        if (!int.TryParse(Console.ReadLine(), out int getCarId))
+                        {
+                            Console.WriteLine("Invalid ID format.");
+                            break;
+                        }
+                        car = carCrud.Get(getCarId);
+                        if (car == null) { Console.WriteLine("Car not found."); break; }
+                        Console.WriteLine($"Id: {car.Id}"); // Corregido: Mostrar Id, no Patent
                         Console.WriteLine($"Patent: {car.Patent}");
                         Console.WriteLine($"Brand: {car.Brand}");
                         Console.WriteLine($"Model: {car.Model}");
@@ -69,7 +81,8 @@ namespace ProjectAgency
                     case 2:
                         Console.WriteLine("You have chosen Add car option");
                         Console.WriteLine("Enter the Id:");
-                        car.Id = Console.ReadLine();
+                        int.TryParse(Console.ReadLine(), out int newId);
+                        car.Id = newId;
                         Console.WriteLine("Enter the patent:");
                         car.Patent = Console.ReadLine();
                         Console.WriteLine("Enter the brand:");
@@ -77,11 +90,13 @@ namespace ProjectAgency
                         Console.WriteLine("Enter the model:");
                         car.Model = Console.ReadLine();
                         Console.WriteLine("Enter the doors amount:");
-                        car.DoorsAmount = Convert.ToByte(Console.ReadLine());
+                        byte.TryParse(Console.ReadLine(), out byte doors);
+                        car.DoorsAmount = doors;
                         Console.WriteLine("Enter the color:");
                         car.Color = Console.ReadLine();
                         Console.WriteLine("Is the car automatic?(true/false):");
-                        car.Automatic = Convert.ToBoolean(Console.ReadLine());
+                        bool.TryParse(Console.ReadLine(), out bool isAuto);
+                        car.Automatic = isAuto;
                         Console.WriteLine("Car was added succesfully !!");
                         carCrud.Create(car);
                         break;
@@ -89,15 +104,19 @@ namespace ProjectAgency
                     case 3:   // pasarlo aNetcore 5.0
                         Console.WriteLine("You have chosen Delete car option");
                         Console.WriteLine("Enter the car Id to be deleted");
-                        var patentToDelete = Console.ReadLine();
-                        carCrud.Delete(patentToDelete);
-                        Console.WriteLine($"Id: {patentToDelete} deleted !!");
+                        if (!int.TryParse(Console.ReadLine(), out int idToDelete))
+                        {
+                            Console.WriteLine("Invalid ID.");
+                            break;
+                        }
+                        carCrud.Delete(idToDelete);
+                        Console.WriteLine($"Id: {idToDelete} deleted !!");
                         break;
 
                     case 4:
                         Console.WriteLine("You have chosen Update car option");
                         Console.WriteLine("Enter the car Id to be updated");
-                        car.Id = Console.ReadLine();
+                        car.Id = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine("Enter the NEW patent:");
                         car.Patent = Console.ReadLine();
                         Console.WriteLine("Enter the NEW brand:");
@@ -171,14 +190,14 @@ namespace ProjectAgency
                         Console.WriteLine("Is the Cp:");
                         client.Cp = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine("Is the LastUpdatedDate:");
-                        client.LastUpdatedDate = Console.ReadLine();
+                        client.LastUpdatedDate = DateTime.Parse(Console.ReadLine());
                         clientCrud.Create(client);
                         break;
 
                     case 8:   
                         Console.WriteLine("You have chosen Delete client option");
                         Console.WriteLine("Enter the client Id to be deleted");
-                        var clientToBeDelete = (Console.ReadLine());                        
+                        var clientToBeDelete = Convert.ToInt32(Console.ReadLine());                        
                         clientCrud.Delete(clientToBeDelete);
                         Console.WriteLine($"Idt: {clientToBeDelete} deleted !!");
                         break;
@@ -202,7 +221,7 @@ namespace ProjectAgency
                         Console.WriteLine("Enter the NEW Cp");
                         client.Cp = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine("Enter the NEW LastUpdatedDate");
-                        client.LastUpdatedDate = Console.ReadLine();
+                        client.LastUpdatedDate = DateTime.Parse(Console.ReadLine());
                         Console.WriteLine("Client was Updated succesfully !!");
                         clientCrud.Update(client);
                         break;
@@ -255,7 +274,7 @@ namespace ProjectAgency
                         Console.WriteLine("Enter the Rental Car Id:");
                         rental.RentalCarId = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine("Enter the Rental Returned Date:");
-                        rental.RentalReturnDate = Console.ReadLine();
+                        rental.RentalReturnDate = DateTime.Parse(Console.ReadLine());
                         rentalCrud.Create(rental);
                         Console.WriteLine("Rental was added succesfully !!");
                         break;
@@ -263,7 +282,7 @@ namespace ProjectAgency
                     case 13:
                         Console.WriteLine("You have chosen Delete rental option");
                         Console.WriteLine("Enter the rental Id to be deleted");
-                        rentalCrud.Delete(Console.ReadLine());
+                        rentalCrud.Delete(Convert.ToInt32(Console.ReadLine())); // Corregido: Convertir a int
                         break;
 
                     case 14:
@@ -277,7 +296,7 @@ namespace ProjectAgency
                         Console.WriteLine("Enter the NEW Rental Car Id:");
                         rental.RentalCarId = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine("Enter the doors NEW Rental Return Date:");
-                        rental.RentalReturnDate = Console.ReadLine();
+                        rental.RentalReturnDate = DateTime.Parse(Console.ReadLine());
                         Console.WriteLine("Rental was Updated succesfully !!");
                         rentalCrud.Update(rental);
                         break;

@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿﻿using Newtonsoft.Json;
 using ProyectoAgencia;
 using ProyectoAgencia.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-namespace ProjectAgency
+namespace ProyectoAgencia
 {
     public class ClientCRUD : ICRUD<Client>
     {
@@ -17,99 +18,64 @@ namespace ProjectAgency
 
         public Client Get(int Id)
         {
-            var clientJsonString = File.ReadAllText(_clientFilePath);
-            var allClients = JsonConvert.DeserializeObject<List<Client>>(clientJsonString);
-
-            foreach (Client client in allClients)
-            {
-                if (Convert.ToInt32(Id).Equals(client.Id))
-                {
-                    return client;
-                }
-            }
-            return null;
+            return ListAll().FirstOrDefault(client => client.Id == Id);
         }
-        
-        public bool CheckUniqueDni(string dni)
+        public bool CheckUniqueDni(int dni)
         {
-            var clientJsonString = File.ReadAllText(_clientFilePath);
-            var allClients = JsonConvert.DeserializeObject<List<Client>>(clientJsonString);
-
-            foreach (Client element in allClients)
-            {
-                if (Convert.ToInt32((dni)).Equals(element.DNI))
-                {
-                    string clientJson = JsonConvert.SerializeObject(allClients);
-                    return false;
-                }                
-            }
-            return true;
+            return !ListAll().Any(client => client.DNI == dni);
         }
 
         public Client Create(Client client)
         {
-            var clientJsonString = File.ReadAllText(_clientFilePath);
-            var allClients = JsonConvert.DeserializeObject<List<Client>>(clientJsonString);
-            
-            bool IsDniUnique = CheckUniqueDni(Convert.ToString(client.DNI));
-            if (IsDniUnique == true) 
+            var allClients = ListAll();
+
+            if (CheckUniqueDni(client.DNI)) 
             {
                 allClients.Add(client);
-                Console.WriteLine("Client was added succesfully !!");
-                File.WriteAllText(_clientFilePath, JsonConvert.SerializeObject(allClients));
+                SaveAll(allClients);
+                Console.WriteLine("Client was added successfully !!");
                 return client;
             }
-            Console.WriteLine("Client was NOT added becasue DNI is duplicated !!");
+
+            Console.WriteLine("Client was NOT added because DNI is duplicated !!"); // Corrección de tipografía
             return client;
         }
 
-        public void Delete(string Id)
+        public void Delete(int Id)
         {
+            var allClients = ListAll();
+            var clientToRemove = allClients.FirstOrDefault(c => c.Id == Id);
 
-            var clientJsonString = File.ReadAllText(_clientFilePath);
-            var allClients = JsonConvert.DeserializeObject<List<Client>>(clientJsonString);
-
-            foreach (Client element in allClients)
+            if (clientToRemove != null)
             {
-                if (Convert.ToInt32(Id).Equals(element.Id))
-                {
-                    allClients.Remove(element);
-                    string clientJson = JsonConvert.SerializeObject(allClients);
-                    File.WriteAllText(_clientFilePath, clientJson);
-                    break;
-                }
+                allClients.Remove(clientToRemove);
+                SaveAll(allClients);
             }
         }
 
         public void Update(Client client)
         {
-            var clientJsonString = File.ReadAllText(_clientFilePath);
-            var allClients = JsonConvert.DeserializeObject<List<Client>>(clientJsonString);
+            var allClients = ListAll();
+            var index = allClients.FindIndex(c => c.Id == client.Id);
 
-            for (var i = 0; i < allClients.Count; i++)
+            if (index != -1)
             {
-                if (client.Id == (allClients[i].Id))
-                {
-                    allClients[i].DNI = client.DNI;
-                    allClients[i].Name = client.Name;
-                    allClients[i].Lastname = client.Lastname;
-                    allClients[i].Phone = client.Phone;
-                    allClients[i].Address = client.Address;
-                    allClients[i].City = client.City;
-                    allClients[i].Cp = client.Cp;
-                    allClients[i].LastUpdatedDate = client.LastUpdatedDate;
-                    string json = JsonConvert.SerializeObject(allClients);
-                    File.WriteAllText(_clientFilePath, json);
-                }
+                allClients[index] = client;
+                SaveAll(allClients);
             }
         }
 
         public List<Client> ListAll()
         {
+            if (!File.Exists(_clientFilePath)) return new List<Client>();
             var clientJsonString = File.ReadAllText(_clientFilePath);
-            var allClients = JsonConvert.DeserializeObject<List<Client>>(clientJsonString);
+            return JsonConvert.DeserializeObject<List<Client>>(clientJsonString) ?? new List<Client>();
+        }
 
-            return allClients;
+        private void SaveAll(List<Client> allClients)
+        {
+            string json = JsonConvert.SerializeObject(allClients, Formatting.Indented);
+            File.WriteAllText(_clientFilePath, json);
         }
     }
 }

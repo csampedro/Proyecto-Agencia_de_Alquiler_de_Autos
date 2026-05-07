@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿﻿﻿﻿using Newtonsoft.Json;
 using ProyectoAgencia.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 
 namespace ProyectoAgencia
@@ -17,73 +18,53 @@ namespace ProyectoAgencia
 
         public Rental Get(int Id)
         {
-            var rentalJsonString = File.ReadAllText(_rentalFilePath);
-            var allRentals = JsonConvert.DeserializeObject<List<Rental>>(rentalJsonString);
-
-            foreach (Rental rental in allRentals)
-            {
-                if (Convert.ToInt32(Id).Equals(rental.Id))
-                {
-                    return rental;
-                }
-            }
-            return null;//if no matches, return null
+            return ListAll().FirstOrDefault(rental => rental.Id == Id);
         }
 
         public Rental Create(Rental rental)
         {
-            var rentalJsonString = File.ReadAllText(_rentalFilePath);
-            var allRentals = JsonConvert.DeserializeObject<List<Rental>>(rentalJsonString);
-            
+            var allRentals = ListAll();
             allRentals.Add(rental);
-            string rentalJson = JsonConvert.SerializeObject(allRentals);
-            File.WriteAllText(_rentalFilePath, rentalJson);
+            SaveAll(allRentals);
             return rental;
         }
 
-        public void Delete(string Id)
+        public void Delete(int Id)
         {
-            var rentalJsonString = File.ReadAllText(_rentalFilePath);
-            var allRentals = JsonConvert.DeserializeObject<List<Rental>>(rentalJsonString);
+            var allRentals = ListAll();
+            var rentalToRemove = allRentals.FirstOrDefault(r => r.Id == Id);
 
-            foreach (Rental element in allRentals)
+            if (rentalToRemove != null)
             {
-                if (Id.Equals(element.Id))
-                {
-                    Console.WriteLine($"Idt: {Id} deleted !!");
-                    allRentals.Remove(element);
-                    string rentaljson = JsonConvert.SerializeObject(allRentals);
-                    File.WriteAllText(_rentalFilePath, rentaljson);
-                    break;
-                }
+                Console.WriteLine($"Id: {Id} deleted !!");
+                allRentals.Remove(rentalToRemove);
+                SaveAll(allRentals);
             }
         }
 
         public void Update(Rental rental)
         {
-            var rentalJsonString = File.ReadAllText(_rentalFilePath);
-            var allRentals = JsonConvert.DeserializeObject<List<Rental>>(rentalJsonString);
-            for (var i = 0; i < allRentals.Count; i++)
+            var allRentals = ListAll();
+            var index = allRentals.FindIndex(r => r.Id == rental.Id);
+
+            if (index != -1)
             {
-                if (rental.Id == (allRentals[i].Id))
-                {
-                    allRentals[i].RentalDuration = rental.RentalDuration;
-                    allRentals[i].RentalClientId = rental.RentalClientId;
-                    allRentals[i].RentalCarId = rental.RentalCarId;
-                    allRentals[i].RentalReturnDate = rental.RentalReturnDate;
-                    string rentaljson = JsonConvert.SerializeObject(allRentals);
-                    File.WriteAllText(_rentalFilePath, rentaljson);
-                }
+                allRentals[index] = rental;
+                SaveAll(allRentals);
             }
         }
 
         public List<Rental> ListAll()
         {
+            if (!File.Exists(_rentalFilePath)) return new List<Rental>();
             var rentalJsonString = File.ReadAllText(_rentalFilePath);
-            var allRentals = JsonConvert.DeserializeObject<List<Rental>>(rentalJsonString);
-
-            return allRentals;
+            return JsonConvert.DeserializeObject<List<Rental>>(rentalJsonString) ?? new List<Rental>();
         }
 
+        private void SaveAll(List<Rental> allRentals)
+        {
+            string json = JsonConvert.SerializeObject(allRentals, Formatting.Indented);
+            File.WriteAllText(_rentalFilePath, json);
+        }
     }
 }
